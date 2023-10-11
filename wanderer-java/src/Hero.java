@@ -6,7 +6,7 @@ public class Hero extends Character{
 
     String currentFace;
 
-    public Hero (int x, int y, int maxHP, int SP, int DP) {
+    public Hero (int x, int y, Area area) {
         position = new int[2];
         this.isAlive = true;
         this.position[0] = x;
@@ -16,10 +16,28 @@ public class Hero extends Character{
         this.faceRight = "./src/img/hero-right.png";
         this.faceLeft = "./src/img/hero-left.png";
         this.currentFace=faceDown;
-        this.maxHP=maxHP;
-        this.currentHP=maxHP;
-        this.SP=SP;
-        this.DP=DP;
+        this.maxHP = 20+3*area.d6;
+        this.currentHP = maxHP;
+        this.SP= 5 + area.d6;
+        this.DP=2*area.d6;
         this.level=1;
+        area.getTileByCoordinates(x,y).heroIsHere=true;
+    }
+
+    public void strike(Monster monster, int d6) {
+        int strikeValue = 2*d6+SP;
+        if (strikeValue > monster.DP) {
+            monster.currentHP -= strikeValue-monster.DP;
+            if (monster.currentHP <= 0) {
+                monster.isAlive=false;
+            }
+        }
+    }
+
+    public void levelUp(int d6) {
+        this.maxHP += d6;
+        this.DP += d6;
+        this.SP += d6;
+        level++;
     }
 }
