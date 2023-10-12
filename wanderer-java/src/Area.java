@@ -147,6 +147,11 @@ public class Area extends JComponent {
         } else if (randomPicker < 5) {
             monsterLevel += 1;
         }
+        int johnCenaRoll = random.nextInt(10);
+        boolean hasJohnCena = (johnCenaRoll == 0);
+        if (hasJohnCena) {
+            monsterCount++;
+        }
         for (int i = 0; i < monsterCount+1; i++) {
             int x = random.nextInt(10);
             int y = random.nextInt(10);
@@ -155,14 +160,19 @@ public class Area extends JComponent {
                 y = random.nextInt(10);
             }
             if (i == monsterCount) {
-                Boss boss = new Boss(x,y,monsterLevel,this);
+                Boss boss = new Boss(x, y, monsterLevel, this);
                 monsters.add(boss);
             } else {
-                Monster monster = new Monster(x, y, monsterLevel,this);
-                if (i == 1) {
-                    monster.hasKey=true;
+                if (i == 0 && hasJohnCena) {
+                    JohnCena john = new JohnCena(x,y,monsterLevel,this);
+                    monsters.add(john);
+                } else {
+                    Monster monster = new Monster(x, y, monsterLevel, this);
+                    if (i == 1) {
+                        monster.hasKey = true;
+                    }
+                    monsters.add(monster);
                 }
-                monsters.add(monster);
             }
         }
     }
@@ -237,14 +247,21 @@ public class Area extends JComponent {
         repaint();
     }
 
+    public void johnCenaChecker() {
+        if (getTileByCoordinates(hero.position[0],hero.position[1]).johnCenaIsHere) {
+            soundHandler.johnCenaSound();
+        }
+    }
+
 
     @Override
     public void paint(Graphics graphics) {
         //the main painting/repainting method
         super.paint(graphics);
         drawTiles(graphics);
-        drawMonsters(graphics);
         drawHero(graphics);
+        drawMonsters(graphics);
         drawHUD(graphics);
+        johnCenaChecker();
     }
 }

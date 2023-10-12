@@ -6,6 +6,8 @@ public abstract class Tile {
 
     boolean monsterIsHere;
 
+    boolean johnCenaIsHere;
+
     int x;
 
     int y;

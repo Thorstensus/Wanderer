@@ -14,6 +14,8 @@ public class SoundHandler {
 
     Area area;
 
+    String johnCena;
+
 
     public SoundHandler(Area area) {
         this.area=area;
@@ -21,6 +23,7 @@ public class SoundHandler {
         this.move="./src/music/move.wav";
         this.victory="./src/music/victory.wav";
         this.kill="./src/music/kill.wav";
+        this.johnCena="./src/music/john-cena.wav";
         this.musicFiles=new String[]{"./src/music/drakath-theme.wav","./src/music/paradox-portal.wav","./src/music/wrath-theme.wav"};
     }
 
@@ -55,6 +58,10 @@ public class SoundHandler {
 
     public void killSound() {
         playSound(kill,1.5);
+    }
+
+    public void johnCenaSound() {
+        playSound(johnCena,2);
     }
 
     public void playMusic(double volume) {
@@ -98,6 +105,7 @@ public class SoundHandler {
         } catch (UnsupportedAudioFileException | IOException | LineUnavailableException e) {
             e.printStackTrace();
         }
+
     }
 
 }

@@ -2,6 +2,8 @@ public class Wall extends Tile{
     final boolean canBePassed;
     final boolean heroIsHere;
     final boolean monsterIsHere;
+
+    final boolean johnCenaIsHere;
     public Wall(int x, int y) {
         this.canBePassed=false;
         this.x=x;
@@ -9,6 +11,7 @@ public class Wall extends Tile{
         this.fileName="./src/img/wall.png";
         this.heroIsHere=false;
         this.monsterIsHere=false;
+        this.johnCenaIsHere=false;
     }
 
     public void nyan() {

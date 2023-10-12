@@ -9,6 +9,7 @@ public class WalkingTile extends Tile{
         this.y=y;
         this.heroIsHere=false;
         this.monsterIsHere=false;
+        this.johnCenaIsHere=false;
     }
 
     public void nyan() {

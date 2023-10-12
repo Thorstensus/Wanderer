@@ -8,6 +8,8 @@ public class GameController implements KeyListener {
     Hero hero;
 
     ArrayList<Integer> counterBlacklist = new ArrayList<>();
+
+    Tile leftTile;
     public GameController(Area area, Hero hero) {
         this.area=area;
         this.hero = hero;
@@ -25,7 +27,6 @@ public class GameController implements KeyListener {
     @Override
     public void keyReleased(KeyEvent e) {
         int keyCode = e.getKeyCode();
-
         switch (keyCode) {
             case KeyEvent.VK_UP:
                 moveHero(0, -1, hero.faceUp);
@@ -44,6 +45,7 @@ public class GameController implements KeyListener {
                 break;
         }
         handleMonsterMoves();
+        leftTile.heroIsHere=false;
         area.repaint();
     }
 
@@ -53,10 +55,10 @@ public class GameController implements KeyListener {
 
         if (isValidMove(newPosX, newPosY)) {
             Tile currentTile = area.getTileByCoordinates(hero.position[0], hero.position[1]);
-            currentTile.heroIsHere = false;
             hero.position[0] = newPosX;
             hero.position[1] = newPosY;
             area.moveCounter++;
+            leftTile=currentTile;
         }
         hero.currentFace = faceDirection;
         area.soundHandler.moveSound();
@@ -71,10 +73,17 @@ public class GameController implements KeyListener {
     }
 
     private void handleMonsterMoves() {
+        for (Monster monster : area.monsters) {
+            if (monster instanceof JohnCena){
+                monster.move(area);
+            }
+        }
         if (area.moveCounter % 2 == 0 && !counterBlacklist.contains(area.moveCounter)) {
             for (Monster monster : area.monsters) {
-                monster.move(area);
-                counterBlacklist.add(area.moveCounter);
+                if (!(monster instanceof JohnCena)){
+                    monster.move(area);
+                    counterBlacklist.add(area.moveCounter);
+                }
             }
         }
     }
