@@ -64,13 +64,15 @@ public class Area extends JComponent {
         setVisible(true);
     }
     public void makeTiles(AreaWallMap areaWallMap) {
+        Random random = new Random();
+        int number = random.nextInt(5);
         for (int row = 0; row < gridSize; row++) {
             int wallChecker = 0;
             for (int column = 0; column < gridSize; column++) {
-                if (areaWallMap.wallsCoordinates[row][wallChecker] == column){
+                if (areaWallMap.wallsCoordinates[number][row][wallChecker] == column){
                     Wall wall = new Wall(column,row);
                     tiles.add(wall);
-                    if (wallChecker < areaWallMap.wallsCoordinates[row].length-1) {
+                    if (wallChecker < areaWallMap.wallsCoordinates[number][row].length-1) {
                         wallChecker++;
                     }
                 } else {

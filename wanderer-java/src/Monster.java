@@ -27,16 +27,17 @@ public class Monster extends Character{
 
         do {
             int[] newPosition = Arrays.copyOf(this.position, this.position.length);
-            int randomDirection = random.nextInt(4);
+            int randomDirection = random.nextInt(5);
 
             switch (randomDirection) {
                 case 0: newPosition[0]--; break;
                 case 1: newPosition[1]--; break;
                 case 2: newPosition[0]++; break;
                 case 3: newPosition[1]++; break;
+                case 4: break;
             }
 
-            if (!area.isWall(newPosition[0], newPosition[1]) && !area.getTileByCoordinates(newPosition[0], newPosition[1]).monsterIsHere) {
+            if (!area.isWall(newPosition[0], newPosition[1]) && (!area.getTileByCoordinates(newPosition[0],newPosition[1]).monsterIsHere) ^ randomDirection == 4) {
                 area.getTileByCoordinates(this.position[0], this.position[1]).monsterIsHere = false;
                 this.position = newPosition;
                 area.getTileByCoordinates(this.position[0], this.position[1]).monsterIsHere = true;
