@@ -10,4 +10,8 @@ public class Wall extends Tile{
         this.heroIsHere=false;
         this.monsterIsHere=false;
     }
+
+    public void nyan() {
+        this.fileName="./src/img/hypnotoad.png";
+    }
 }

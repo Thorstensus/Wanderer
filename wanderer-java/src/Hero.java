@@ -40,4 +40,20 @@ public class Hero extends Character{
         this.SP += d6;
         level++;
     }
+
+    public void nyan() {
+        this.faceDown = "./src/img/nyan-down.png";
+        this.faceUp = "./src/img/nyan-up.png";
+        this.faceRight = "./src/img/nyan-right.png";
+        this.faceLeft = "./src/img/nyan-left.png";
+        this.currentFace=faceRight;
+    }
+
+    public void unnyan() {
+        this.faceDown = "./src/img/hero-down.png";
+        this.faceUp = "./src/img/hero-up.png";
+        this.faceRight = "./src/img/hero-right.png";
+        this.faceLeft = "./src/img/hero-left.png";
+        this.currentFace=faceDown;
+    }
 }

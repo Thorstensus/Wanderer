@@ -10,4 +10,6 @@ public abstract class Tile {
 
     int y;
 
+    public abstract void nyan();
+
 }

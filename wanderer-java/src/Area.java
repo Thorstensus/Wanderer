@@ -1,3 +1,4 @@
+import javax.sound.sampled.*;
 import javax.swing.*;
 import java.awt.*;
 import java.util.ArrayList;
@@ -6,6 +7,7 @@ import java.util.Random;
 
 public class Area extends JComponent {
 
+    JFrame frame;
     static int WIDTH = 720;
     static int HEIGHT = 780;
 
@@ -19,6 +21,8 @@ public class Area extends JComponent {
 
     int monsterCount;
 
+    Clip clip;
+
 
     ArrayList<Tile> tiles;
 
@@ -29,11 +33,22 @@ public class Area extends JComponent {
 
     int moveCounter;
 
+    Random random;
 
-    public Area() {
+    boolean nyan;
+
+    SoundHandler soundHandler;
+
+    BattleHandler battleHandler;
+
+    public Area(JFrame frame) {
+        this.frame=frame;
         moveCounter = 0;
         areaLevel = 0;
-        Random random = new Random();
+        nyan=false;
+        random = new Random();
+        battleHandler = new BattleHandler(this);
+        soundHandler = new SoundHandler(this);
         d6 = 1 + random.nextInt(6);
         setPreferredSize(new Dimension(WIDTH, HEIGHT));
         mapUpdate();
@@ -53,6 +68,12 @@ public class Area extends JComponent {
             } else  if (hero.currentHP < hero.maxHP){
                 hero.currentHP += hero.maxHP/10;
             }
+            hero.unnyan();
+            if (this.clip != null) {
+                clip.stop();
+            }
+            frame.setTitle("Wanderer");
+            nyan=false;
         }
         areaLevel++;
         monsterCount = 3 + random.nextInt(4);
@@ -61,6 +82,7 @@ public class Area extends JComponent {
         makeTiles(areaWallMap);
         monsters = new ArrayList<>();
         generateMonsters();
+        soundHandler.playMusic(0.4);
         setVisible(true);
     }
     public void makeTiles(AreaWallMap areaWallMap) {
@@ -84,11 +106,16 @@ public class Area extends JComponent {
     }
 
     public void drawTiles(Graphics graphics) {
-            for (Tile tile : tiles) {
-                PositionedImage wallImage = new PositionedImage(tile.fileName, tile.x*cellSize, tile.y*cellSize);
+        for (Tile tile : tiles) {
+            if (nyan && tile instanceof Wall) {
+                PositionedImage wallImage = new PositionedImage("./src/img/rainbow-tile.png", tile.x * cellSize, tile.y * cellSize);
                 wallImage.draw(graphics);
             }
+            PositionedImage wallImage = new PositionedImage(tile.fileName, tile.x * cellSize, tile.y * cellSize);
+            wallImage.draw(graphics);
+        }
     }
+
 
     public boolean isWall(int x, int y) {
         Tile tile = getTileByCoordinates(x, y);
@@ -149,30 +176,9 @@ public class Area extends JComponent {
         return null;
     }
 
-    public void battle(Hero hero, Monster monster) {
-        hero.strike(monster, d6);
-        if (monster.isAlive) {
-            monster.strikeBack(hero,this);
-            if (!hero.isAlive) {
-                endGame();
-            }
-        } else {
-            hero.levelUp(d6);
-            monsters.remove(monster);
-            boolean nextLevel = true;
-            for (Monster monster1 : monsters) {
-                if (monster1.hasKey || monster1 instanceof Boss) {
-                    nextLevel = false;
-                    break;
-                }
-            }
-            if (nextLevel) {
-                mapUpdate();
-            }
-        }
-    }
 
     public void endGame() {
+        //change for executable game
         System.out.println("GAME OVER!");
         System.exit(0);
     }
@@ -191,20 +197,46 @@ public class Area extends JComponent {
         }
     }
     public void drawHUD(Graphics graphics) {
-        String text = String.format("Hero (Level %d) HP:%d/%d | DP: %d | SP: %d", hero.level, hero.currentHP, hero.maxHP, hero.DP, hero.SP);
-        graphics.setFont(new Font("Comic Sans MS", Font.BOLD, 12));
+        String heroName = "Hero";
+        if (nyan) {
+            heroName = "NYAN CAT";
+        }
+        String text = String.format("%s (Level %d) HP:%d/%d | DP: %d | SP: %d", heroName, hero.level, hero.currentHP, hero.maxHP, hero.DP, hero.SP);
+        graphics.setFont(new Font("Monospaced", Font.BOLD, 12));
+        if (nyan) {
+            graphics.setFont(new Font("Comic Sans MS", Font.BOLD, 12));
+        }
         graphics.drawString(text, 20, 755);
         graphics.drawLine(WIDTH/2,720,WIDTH/2,HEIGHT);
         if (getTileByCoordinates(hero.position[0], hero.position[1]).monsterIsHere) {
             String monsterText = "";
             for (Monster monster : monsters) {
                 if (monster.position[0] == hero.position[0] && monster.position[1] == hero.position[1]) {
-                    monsterText = String.format("%s (Level %d) HP:%d/%d | DP: %d | SP: %d",monster.getClass().getSimpleName(),monster.level,monster.currentHP,monster.maxHP,monster.DP,monster.SP);
+                    String monsterName = monster.getClass().getSimpleName();
+                    if (nyan) {
+                        monsterName = "Bad Guy >:(";
+                    }
+                    monsterText = String.format("%s (Level %d) HP:%d/%d | DP: %d | SP: %d",monsterName,monster.level,monster.currentHP,monster.maxHP,monster.DP,monster.SP);
                 }
                 graphics.drawString(monsterText,20+WIDTH/2,755);
             }
         }
     }
+
+    public void nyanMode() {
+        nyan=true;
+        hero.nyan();
+        for (Monster monster : monsters) {
+            monster.nyan();
+        }
+        for (Tile tile : tiles) {
+            tile.nyan();
+        }
+        soundHandler.nyanMusic(0.4);
+        frame.setTitle("NYANderer!");
+        repaint();
+    }
+
 
     @Override
     public void paint(Graphics graphics) {

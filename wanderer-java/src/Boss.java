@@ -8,4 +8,9 @@ public class Boss extends Monster {
         this.DP=level/2*area.d6+area.d6/2;
         this.imageFile="./src/img/boss.png";
     }
+
+    @Override
+    public void nyan() {
+        this.imageFile="./src/img/hero-down.png";
+    }
 }

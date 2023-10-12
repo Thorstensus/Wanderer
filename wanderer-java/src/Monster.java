@@ -57,4 +57,8 @@ public class Monster extends Character{
             }
         }
     }
+
+    public void nyan() {
+        this.imageFile="./src/img/dog.png";
+    }
 }

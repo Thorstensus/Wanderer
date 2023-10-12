@@ -1,4 +1,5 @@
 public class AreaWallMap {
+    //enum
     int[][][] wallsCoordinates = new int[][][] {{
             {3},
             {3, 5, 7, 8},

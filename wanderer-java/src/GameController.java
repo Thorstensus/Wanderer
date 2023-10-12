@@ -11,6 +11,7 @@ public class GameController implements KeyListener {
     public GameController(Area area, Hero hero) {
         this.area=area;
         this.hero = hero;
+        counterBlacklist.add(0);
     }
     @Override
     public void keyTyped(KeyEvent e) {
@@ -23,47 +24,63 @@ public class GameController implements KeyListener {
     }
     @Override
     public void keyReleased(KeyEvent e) {
-        if (e.getKeyCode() == KeyEvent.VK_UP) {
-            if ( (hero.position[1] - 1 >= 0) && !(area.isWall(hero.position[0],hero.position[1] - 1)) ) {
-                area.getTileByCoordinates(hero.position[0],hero.position[1]).heroIsHere = false;
-                hero.position[1] -= 1;
-                area.moveCounter++;
-            }
-            hero.currentFace= hero.faceUp;
-        } else if(e.getKeyCode() == KeyEvent.VK_DOWN) {
-            if ( (hero.position[1] + 1 < 10) && !(area.isWall(hero.position[0],hero.position[1] + 1)) ) {
-                area.getTileByCoordinates(hero.position[0],hero.position[1]).heroIsHere = false;
-                hero.position[1] += 1;
-                area.moveCounter++;
-            }
-            hero.currentFace= hero.faceDown;
-        } else if(e.getKeyCode() == KeyEvent.VK_LEFT) {
-            if ( (hero.position[0] -1 >= 0) && !(area.isWall(hero.position[0]-1,hero.position[1])) ) {
-                area.getTileByCoordinates(hero.position[0],hero.position[1]).heroIsHere = false;
-                hero.position[0] -= 1;
-                area.moveCounter++;
-            }
-            hero.currentFace= hero.faceLeft;
-        } else if(e.getKeyCode() == KeyEvent.VK_RIGHT) {
-            if ( (hero.position[0] +1 < 10) && !(area.isWall(hero.position[0]+1,hero.position[1])) ) {
-                area.getTileByCoordinates(hero.position[0],hero.position[1]).heroIsHere = false;
-                hero.position[0] += 1;
-                area.moveCounter++;
-            }
-            hero.currentFace= hero.faceRight;
-        } else if(e.getKeyCode() == KeyEvent.VK_SPACE) {
-            Monster targetMonster = area.getMonsterByCoordinates(hero.position[0], hero.position[1]);
-            if (targetMonster!=null) {
-                area.battle(hero, targetMonster);
-            }
+        int keyCode = e.getKeyCode();
+
+        switch (keyCode) {
+            case KeyEvent.VK_UP:
+                moveHero(0, -1, hero.faceUp);
+                break;
+            case KeyEvent.VK_DOWN:
+                moveHero(0, 1, hero.faceDown);
+                break;
+            case KeyEvent.VK_LEFT:
+                moveHero(-1, 0, hero.faceLeft);
+                break;
+            case KeyEvent.VK_RIGHT:
+                moveHero(1, 0, hero.faceRight);
+                break;
+            case KeyEvent.VK_SPACE:
+                handleSpaceBar();
+                break;
         }
+        handleMonsterMoves();
+        area.repaint();
+    }
+
+    private void moveHero(int xOffset, int yOffset, String faceDirection) {
+        int newPosX = hero.position[0] + xOffset;
+        int newPosY = hero.position[1] + yOffset;
+
+        if (isValidMove(newPosX, newPosY)) {
+            Tile currentTile = area.getTileByCoordinates(hero.position[0], hero.position[1]);
+            currentTile.heroIsHere = false;
+            hero.position[0] = newPosX;
+            hero.position[1] = newPosY;
+            area.moveCounter++;
+        }
+        hero.currentFace = faceDirection;
+        area.soundHandler.moveSound();
+    }
+
+    private void handleSpaceBar() {
+        Monster targetMonster = area.getMonsterByCoordinates(hero.position[0], hero.position[1]);
+        if (targetMonster != null) {
+            area.battleHandler.battle(hero, targetMonster);
+            area.soundHandler.combatSound();
+        }
+    }
+
+    private void handleMonsterMoves() {
         if (area.moveCounter % 2 == 0 && !counterBlacklist.contains(area.moveCounter)) {
             for (Monster monster : area.monsters) {
                 monster.move(area);
                 counterBlacklist.add(area.moveCounter);
             }
         }
-        area.repaint();
+    }
+
+    private boolean isValidMove(int x, int y) {
+        return x >= 0 && x < 10 && y >= 0 && y < 10 && !area.isWall(x, y);
     }
 
 }
