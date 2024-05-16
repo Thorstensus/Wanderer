@@ -7,6 +7,7 @@ I added my own features, my favorite being an easter egg - try to type "nyanyany
 Controls:
 
 Arrows = move
+
 Spacebar = attack
 
 Enjoy!
